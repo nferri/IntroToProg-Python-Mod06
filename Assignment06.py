@@ -41,6 +41,10 @@ class FileProcessor:
         '''
         This function loads data from a JSON to a dictionary. Error prints if file
             does not exist or issue reading.
+
+        :param file_name: name of the JSON file
+        :param student_data: list of student data
+        :return: list of student data
             
         Change Log:
             Natalie Ferri, 08/03/2024, incorporate IO error
@@ -54,18 +58,15 @@ class FileProcessor:
         except FileNotFoundError as e:
             IO.output_error_messages(message="File does not exist!", error=e)
             
-        except json.JSONDecodeError as e:
-            IO.output_error_messages(message="Error decoding JSON file!", error=e)
-            
         except Exception as e:
             IO.output_error_messages(message="Error reading the file.", error=e)
 
         finally:
-            if file.closed == False:
+            if not file.closed:
                 file.close()
-                
-        return student_data
 
+        return student_data
+                
     # Save the data to JSON
     @staticmethod
     def write_data_to_file (file_name: str, student_data: list):
@@ -73,6 +74,10 @@ class FileProcessor:
         This function writes data to a JSON with data from a list of rows. Error prints if
             file does not write.
             
+        :param file_name: name of the JSON file
+        :param student_data: list of student data
+        :return: None
+        
         ChangeLog:
             Natalie Ferri, 08/03/2024, created function to write to JSON
         '''
@@ -89,11 +94,13 @@ class FileProcessor:
             
         except Exception as e:
             IO.output_error_messages("There was a non-specific error!", e)
-            
-        finally:
-            if file.closed == False:
-                file.close()
 
+        finally:
+            if not file.closed:
+                file.close()
+                
+            for student in student_data:
+                print(student)
                 
 # Present the data   --------------------------------------------------------- #
 class IO:
@@ -107,7 +114,11 @@ class IO:
     def output_error_messages (message: str, error: Exception = None):
         '''
         This functions handles built-in errors.
-            
+
+        :param message: custom error message
+        :param error: exception object
+        :return: None
+        
         ChangeLog:
             Natalie Ferri, 08/03/2024, created function to present errors
         '''
@@ -134,6 +145,9 @@ class IO:
     def input_menu_choice():
         '''
         This function allows for menu choice to be selected by user.
+
+        :param menu: menu to display
+        :return: None
             
         ChangeLog:
             Natalie Ferri, 08/04/2024, created function accepts user input
@@ -157,19 +171,26 @@ class IO:
         '''
         This function displays the collected student data to the user.
 
+        :param student_data: List of student data
+        :return: None
+        
         ChangeLog:
         Natalie Ferri, 08/04/2024, created function printing data
+        Natalie Ferri, 08/05/2024, errors - correcting formatting
         '''
         
         for student in student_data:
-            print(f'{student["FirstName"]} {student["LastName"]} is enrolled in {student["CourseName"]}')
-
+            print(f"Student {student["FirstName"]} "
+                  f"{student["LastName"]} is enrolled in {student["CourseName"]}")
 
     # User input of student data
     @staticmethod
     def input_student_data (student_data: list):
         '''
         This function allows user to input student data.
+
+        :param student_data: List of student data
+        :return: updated list of student data
             
         ChangeLog:
             Natalie Ferri, 08/04/2024, created function for user input 
@@ -186,15 +207,11 @@ class IO:
 
             course_name = input ("Enter course name: ") 
             
-            # Dictionary for JSON
-            dictionary = {
-                            "FirstName": student_first_name,
-                            "LastName": student_last_name,
-                            "CourseName": course_name,
-                            }
-
-
-            student_data.append(dictionary)
+            student = {"FirstName": student_first_name,
+                       "LastName": student_last_name,
+                       "CourseName": course_name}
+            
+            student_data.append(student)
             
             print (f"You have registered {student_first_name} {student_last_name} for {course_name}. \n")
             
@@ -206,8 +223,6 @@ class IO:
             
         return student_data
     
-
-
 # Extract the data from the file
 students = FileProcessor.read_data_from_file (file_name=FILE_NAME, student_data=students)
 
@@ -226,17 +241,17 @@ while (True):
 
     # 1. Register a student for a course.
     if menu_choice == "1":
-        students = IO.input_student_data (student_data=students)
+        students = IO.input_student_data (students)
         continue
 
     # 2. Show current data.  
     elif menu_choice == "2":
-        IO.output_student_courses (student_data=students)
+        IO.output_student_courses (students)
         continue
 
     # 3. Save data to a file.
     elif menu_choice == "3":
-        FileProcessor.write_data_to_file (file_name=FILE_NAME, student_data=students)
+        FileProcessor.write_data_to_file (FILE_NAME, students)
         continue
 
 
