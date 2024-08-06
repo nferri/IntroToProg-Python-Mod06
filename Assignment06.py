@@ -45,7 +45,6 @@ class FileProcessor:
         Change Log:
             Natalie Ferri, 08/03/2024, incorporate IO error
         '''
-        student_data = []
 
         try:
             file = open (file_name, "r")
@@ -161,7 +160,7 @@ class IO:
         ChangeLog:
         Natalie Ferri, 08/04/2024, created function printing data
         '''
- 
+        
         for student in student_data:
             print(f'{student["FirstName"]} {student["LastName"]} is enrolled in {student["CourseName"]}')
 
@@ -177,25 +176,25 @@ class IO:
         '''
 
         try:
-            student_first_name = input ("Enter the student's first name in all caps: ")
+            student_first_name = input ("Enter the student's first name in all caps: ").strip()
             if not student_first_name.isupper():
                 raise AttributeError ("Error: The first name should be in all caps.\n")
 
-            student_last_name = input ("Enter the student's last name in all caps: ")        
+            student_last_name = input ("Enter the student's last name in all caps: ").strip()      
             if not student_last_name.isupper():
                 raise AttributeError ("Error: The last name should be in all caps.\n")
 
             course_name = input ("Enter course name: ") 
             
             # Dictionary for JSON
-            student_data = {
+            dictionary = {
                             "FirstName": student_first_name,
                             "LastName": student_last_name,
                             "CourseName": course_name,
                             }
 
 
-            students.append(student_data)
+            student_data.append(dictionary)
             
             print (f"You have registered {student_first_name} {student_last_name} for {course_name}. \n")
             
@@ -232,7 +231,7 @@ while (True):
 
     # 2. Show current data.  
     elif menu_choice == "2":
-        students = IO.output_student_courses (student_data=students)
+        IO.output_student_courses (student_data=students)
         continue
 
     # 3. Save data to a file.
