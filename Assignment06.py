@@ -8,7 +8,6 @@
 #   Natalie Ferri, 08/05/2024, Trying to resolve str int error
 # ------------------------------------------------------------------------------------------ #
 
-
 import json
 
 # Define the Data Constants
@@ -46,6 +45,7 @@ class FileProcessor:
         Change Log:
             Natalie Ferri, 08/03/2024, incorporate IO error
         '''
+        student_data = []
 
         try:
             file = open (file_name, "r")
@@ -53,10 +53,13 @@ class FileProcessor:
             file.close()
             
         except FileNotFoundError as e:
-            IO.output_error_messages("Text file must exist before running this script!", e)
+            IO.output_error_messages(message="File does not exist!", error=e)
+            
+        except json.JSONDecodeError as e:
+            IO.output_error_messages(message="Error decoding JSON file!", error=e)
             
         except Exception as e:
-            IO.output_error_messages (message= "Error: Issue reading the file. \n", error=e)
+            IO.output_error_messages(message="Error reading the file.", error=e)
 
         finally:
             if file.closed == False:
@@ -79,6 +82,8 @@ class FileProcessor:
             file = open (file_name, "w")
             json.dump (student_data, file)
             file.close()
+            IO.output_student_courses(student_data)
+
             
         except TypeError as e:
             IO.output_error_messages("Please check that the data is a valid JSON format", e)
@@ -90,16 +95,13 @@ class FileProcessor:
             if file.closed == False:
                 file.close()
 
-    ### Print students
-
                 
 # Present the data   --------------------------------------------------------- #
 class IO:
     '''
-    This class inlcudes functions that display a mentu with choices, accepts user input,
+    This class includes functions that display a menu with choices, accepts user input,
         present user input, and has error handling.
     '''
-    pass
 
     # Error message
     @staticmethod
@@ -150,6 +152,20 @@ class IO:
             
         return choice
 
+    # Print user input
+    @staticmethod
+    def output_student_courses(student_data: list):
+        '''
+        This function displays the collected student data to the user.
+
+        ChangeLog:
+        Natalie Ferri, 08/04/2024, created function printing data
+        '''
+ 
+        for student in student_data:
+            print(f'{student["FirstName"]} {student["LastName"]} is enrolled in {student["CourseName"]}')
+
+
     # User input of student data
     @staticmethod
     def input_student_data (student_data: list):
@@ -192,19 +208,7 @@ class IO:
         return student_data
     
 
-    # Print user input
-    @staticmethod
-    def output_student_courses(student_data: list):
-        '''
-        This function displays the collected student data to the user.
 
-        ChangeLog:
-        Natalie Ferri, 08/04/2024, created function printing data
-        '''
-            
-        for student in students:
-            print({student['FirstName']}, {student['LastName']}, {student['CourseName']})
- 
 # Extract the data from the file
 students = FileProcessor.read_data_from_file (file_name=FILE_NAME, student_data=students)
 
@@ -228,7 +232,7 @@ while (True):
 
     # 2. Show current data.  
     elif menu_choice == "2":
-        students = IO.output_student_courses (student_data=students) 
+        students = IO.output_student_courses (student_data=students)
         continue
 
     # 3. Save data to a file.
